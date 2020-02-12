@@ -92,7 +92,10 @@ def run_inference(manifest_folder, batch_size=16, ncpus=1, ngpus=1,
             '%s%s' % (os.path.splitext(os.path.basename(input_name))[0], suffix + '.flo'))
         return output_file
     # create dataset
-    dataset = ImagesFromSubFolders(data_folder, iext=iext)
+    if next(os.walk(data_folder))[1]:
+        dataset = ImagesFromSubFolders(data_folder, iext=iext)
+    else:
+        dataset = ImagesFromFolder(data_folder, iext=iext)
     data_loader = DataLoader(dataset, batch_size=batch_size, pin_memory=True, num_workers=ncpus)
     progress = tqdm(tools.IteratorTimer(data_loader),
                     ncols=100, total=len(data_loader), leave=True, desc='batch progress')
